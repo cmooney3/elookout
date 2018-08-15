@@ -13,13 +13,13 @@ void sendMessage() ; // Prototype so PlatformIO doesn't complain
 Task taskSendMessage(TASK_SECOND * 1 ,TASK_FOREVER, &sendMessage);
 
 void sendMessage() {
+  digitalWrite(LED_BUILTIN, LOW);
   Serial.printf("Sending Message now\r\n");
-  digitalWrite(LED_BUILTIN, HIGH);
   String msg = "Hello from node ";
   msg += mesh.getNodeId();
   mesh.sendBroadcast(msg);
   taskSendMessage.setInterval(random(TASK_SECOND * 1, TASK_SECOND * 5));
-  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 // Needed for painless library
@@ -39,6 +39,7 @@ void nodeTimeAdjustedCallback(int32_t offset) {
     Serial.printf("ADJUSTED TIME %u. Offset = %d\r\n", mesh.getNodeTime(),offset);
 }
 
+
 void setup() {
   Serial.begin(115200);
   Serial.printf("Turning on!\r\n");
@@ -47,7 +48,7 @@ void setup() {
   digitalWrite(LED_BUILTIN, HIGH);
 
   //mesh.setDebugMsgTypes(ERROR | STARTUP | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE); // all types on
-  mesh.setDebugMsgTypes( ERROR | STARTUP );  // set before init() so that you can see startup messages
+  mesh.setDebugMsgTypes(ERROR | STARTUP);  // set before init() so that you can see startup messages
 
   mesh.init(MESH_PREFIX, MESH_PASSWORD, &userScheduler, MESH_PORT);
   mesh.onReceive(&receivedCallback);
